@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -35,17 +37,20 @@ class Client
     #[Column(name: "created", type: "datetime", nullable: false)]
     private $created;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="first_name", type="string", length=96, nullable=false)
-     */
     #[Column(name: "first_name", type: "string", length: 96, nullable: false)]
     private $firstName;
 
 
     #[Column(name: "last_name", type: "string", length: 96, nullable: false)]
     private $lastName;
+
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Feedback::class)]
+    private Collection $feedback;
+
+    public function __construct()
+    {
+        $this->feedback = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,6 +113,36 @@ class Client
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Feedback>
+     */
+    public function getFeedback(): Collection
+    {
+        return $this->feedback;
+    }
+
+    public function addFeedback(Feedback $feedback): self
+    {
+        if (!$this->feedback->contains($feedback)) {
+            $this->feedback->add($feedback);
+            $feedback->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFeedback(Feedback $feedback): self
+    {
+        if ($this->feedback->removeElement($feedback)) {
+            // set the owning side to null (unless already changed)
+            if ($feedback->getClient() === $this) {
+                $feedback->setClient(null);
+            }
+        }
 
         return $this;
     }

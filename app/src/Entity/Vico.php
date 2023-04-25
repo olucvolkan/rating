@@ -2,39 +2,28 @@
 
 namespace App\Entity;
 
+use App\Repository\RatingQuestionRepository;
+use App\Repository\VicoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
 
-/**
- * Vico
- *
- * @ORM\Table(name="vico", indexes={@ORM\Index(name="name_idx", columns={"name"})})
- * @ORM\Entity(repositoryClass="App\Repository\VicoRepository")
- */
+
+#[ORM\Entity(repositoryClass: VicoRepository::class)]
+#[Index(columns: ["name"], name: "name_idx")]
 class Vico
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=64, nullable=false)
-     */
+    #[ORM\Column(name: "name", length: 64, nullable: false)]
     private $name;
 
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created", type="datetime", nullable=false)
-     */
-    private $created;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $created = null;
+
 
     public function getId(): ?int
     {
