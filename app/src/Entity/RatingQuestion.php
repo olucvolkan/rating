@@ -6,9 +6,11 @@ use App\Repository\RatingQuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: RatingQuestionRepository::class)]
-class RatingQuestion
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
+class RatingQuestion implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,10 +25,13 @@ class RatingQuestion
     private ?string $question_text = null;
 
     #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'ratingQuestion', targetEntity: Ratings::class)]
     private Collection $ratings;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $deletedAt = null;
 
     public function __construct()
     {
@@ -62,15 +67,21 @@ class RatingQuestion
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    /**
+     * @return \DateTime|null
+     */
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    /**
+     * @param \DateTime|null $createdAt
+     * @return RatingQuestion
+     */
+    public function setCreatedAt(?\DateTime $createdAt): RatingQuestion
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -102,5 +113,33 @@ class RatingQuestion
         }
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     * @return RatingQuestion
+     */
+    public function setDeletedAt(?\DateTime $deletedAt): RatingQuestion
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'project' => $this->getProject()->getId(),
+            'questionText' => $this->getQuestionText(),
+        ];
     }
 }

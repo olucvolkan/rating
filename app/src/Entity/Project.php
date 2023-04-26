@@ -11,13 +11,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Vico;
 use Doctrine\ORM\Mapping\Index;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 #[Index(columns: ["vico_id"], name: "IDX_2FB3D0EE19F89217")]
 #[Index(columns: ["creator_id"], name: "creator_idx")]
 #[Index(columns: ["created"], name: "created_idx")]
-class Project
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
+class Project implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -46,6 +47,10 @@ class Project
 
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Feedback::class)]
     private Collection $feedback;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $deletedAt = null;
+
 
     public function __construct()
     {
@@ -203,4 +208,32 @@ class Project
         return $this;
     }
 
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     * @return Project
+     */
+    public function setDeletedAt(?\DateTime $deletedAt): Project
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'vico' => $this->getVico()->getId(),
+            'creator' => $this->getCreator()->getId(),
+        ];
+    }
 }

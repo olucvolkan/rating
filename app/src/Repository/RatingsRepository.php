@@ -21,13 +21,14 @@ class RatingsRepository extends ServiceEntityRepository
         parent::__construct($registry, Ratings::class);
     }
 
-    public function save(Ratings $entity, bool $flush = false): void
+    public function save(Ratings $entity, bool $flush = false): Ratings
     {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+        return $entity;
     }
 
     public function remove(Ratings $entity, bool $flush = false): void
@@ -39,28 +40,4 @@ class RatingsRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Ratings[] Returns an array of Ratings objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Ratings
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

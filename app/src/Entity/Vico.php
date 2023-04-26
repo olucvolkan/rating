@@ -7,11 +7,12 @@ use App\Repository\VicoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: VicoRepository::class)]
 #[Index(columns: ["name"], name: "name_idx")]
-class Vico
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
+class Vico implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,6 +25,8 @@ class Vico
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $created = null;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $deletedAt = null;
 
     public function getId(): ?int
     {
@@ -54,5 +57,30 @@ class Vico
         return $this;
     }
 
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
 
+    /**
+     * @param \DateTime|null $deletedAt
+     * @return Vico
+     */
+    public function setDeletedAt(?\DateTime $deletedAt): Vico
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName()
+        ];
+    }
 }

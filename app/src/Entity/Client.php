@@ -10,14 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-
-
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Table(name: "client")]
 #[UniqueConstraint(name: "UNIQ_70E4FA78F85E0677", columns: ["username"])]
 #[Index(fields: ["username"], name: "username_idx")]
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-class Client
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
+class Client implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -46,6 +46,9 @@ class Client
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Feedback::class)]
     private Collection $feedback;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $deletedAt = null;
 
     public function __construct()
     {
@@ -147,5 +150,30 @@ class Client
         return $this;
     }
 
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
 
+    /**
+     * @param \DateTime|null $deletedAt
+     * @return Client
+     */
+    public function setDeletedAt(?\DateTime $deletedAt): Client
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'username' => $this->getUsername(),
+        ];
+    }
 }

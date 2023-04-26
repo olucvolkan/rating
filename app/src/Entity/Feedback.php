@@ -6,9 +6,12 @@ use App\Repository\FeedbackRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 #[ORM\Entity(repositoryClass: FeedbackRepository::class)]
-class Feedback
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
+class Feedback implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,6 +37,10 @@ class Feedback
 
     #[ORM\OneToMany(mappedBy: 'feedback', targetEntity: Ratings::class)]
     private Collection $ratings;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $deletedAt = null;
+
 
     public function __construct()
     {
@@ -133,5 +140,36 @@ class Feedback
         }
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     * @return Feedback
+     */
+    public function setDeletedAt(?\DateTime $deletedAt): Feedback
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
+    }
+
+
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'comment' => $this->getComment(),
+            'overallRating' => $this->getOverallRating(),
+            'project' => $this->getProject()->getId(),
+            'client' => $this->getClient()->getId(),
+        ];
     }
 }

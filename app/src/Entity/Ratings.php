@@ -2,12 +2,17 @@
 
 namespace App\Entity;
 
+use Andante\SoftDeletableBundle\SoftDeletable\SoftDeletableInterface;
+use Andante\SoftDeletableBundle\SoftDeletable\SoftDeletableTrait;
 use App\Repository\RatingsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\ArrayShape;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: RatingsRepository::class)]
-class Ratings
+class Ratings implements \JsonSerializable, SoftDeletableInterface
 {
+    use SoftDeletableTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,7 +30,12 @@ class Ratings
     private ?float $score = null;
 
     #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTime $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime('now');
+    }
 
     public function getId(): ?int
     {
@@ -68,15 +78,34 @@ class Ratings
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    /**
+     * @return \DateTime|null
+     */
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    /**
+     * @param \DateTime|null $createdAt
+     * @return Ratings
+     */
+    public function setCreatedAt(?\DateTime $createdAt): Ratings
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
+
+
+    #[ArrayShape(['id' => "int|null", 'feedback' => "\App\Entity\Feedback|null", 'ratingQuestion' => "\App\Entity\RatingQuestion|null", 'score' => "float|null", 'createdAt' => "\DateTime|null"])] public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'feedback' => $this->getFeedback(),
+            'ratingQuestion' => $this->getRatingQuestion(),
+            'score' => $this->getScore(),
+            'createdAt' => $this->getCreatedAt()
+        ];
+    }
+
 }
