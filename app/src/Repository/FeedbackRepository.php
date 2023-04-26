@@ -21,13 +21,14 @@ class FeedbackRepository extends ServiceEntityRepository
         parent::__construct($registry, Feedback::class);
     }
 
-    public function save(Feedback $entity, bool $flush = false): void
+    public function save(Feedback $entity, bool $flush = false): Feedback
     {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+        return $entity;
     }
 
     public function remove(Feedback $entity, bool $flush = false): void

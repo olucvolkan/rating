@@ -21,7 +21,7 @@ class Feedback implements \JsonSerializable
     #[ORM\Column(length: 255)]
     private ?string $comment = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $overallRating = null;
 
     #[ORM\ManyToOne(inversedBy: 'feedback')]
@@ -33,7 +33,7 @@ class Feedback implements \JsonSerializable
     private ?Client $client = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'feedback', targetEntity: Ratings::class)]
     private Collection $ratings;
@@ -45,6 +45,7 @@ class Feedback implements \JsonSerializable
     public function __construct()
     {
         $this->ratings = new ArrayCollection();
+        $this->createdAt = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -100,16 +101,20 @@ class Feedback implements \JsonSerializable
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    /**
+     * @return \DateTime|null
+     */
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    /**
+     * @param \DateTime|null $createdAt
+     */
+    public function setCreatedAt(?\DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     /**
