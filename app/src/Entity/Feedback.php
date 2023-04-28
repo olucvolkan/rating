@@ -70,7 +70,7 @@ class Feedback implements \JsonSerializable
         return $this->overallRating;
     }
 
-    public function setOverallRating(float $overallRating): self
+    public function setOverallRating(?float $overallRating): self
     {
         $this->overallRating = $overallRating;
 

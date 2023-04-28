@@ -3,7 +3,10 @@
 namespace App\DataFixtures;
 
 use App\Entity\Client;
+use App\Entity\Feedback;
 use App\Entity\Project;
+use App\Entity\RatingQuestion;
+use App\Entity\Ratings;
 use App\Entity\Vico;
 use DateTime;
 use DateTimeImmutable;
@@ -22,7 +25,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             $client = new Client();
             $client->setFirstName($this->faker->name);
             $client->setLastName($this->faker->name);
@@ -53,6 +56,34 @@ class AppFixtures extends Fixture
             $manager->persist($project);
             $manager->flush();
 
+            $ratingQuestion = new RatingQuestion();
+
+            $ratingQuestion->setProject($project);
+            $ratingQuestion->setQuestionText($this->faker->text);
+            $ratingQuestion->setCreatedAt(new DateTime('now'));
+
+            $manager->persist($ratingQuestion);
+            $manager->flush();
+
+            $feedback = new Feedback();
+            $feedback->setComment($this->faker->text);
+            $feedback->setProject($project);
+            $feedback->setCreatedAt(new DateTime('now'));
+            $feedback->setClient($client);
+            $feedback->setOverallRating(4.5);
+
+            $manager->persist($feedback);
+            $manager->flush();
+
+            $rating = new Ratings();
+
+            $rating->setFeedback($feedback);
+            $rating->setRatingQuestion($ratingQuestion);
+            $rating->setScore(4.5);
+            $rating->setCreatedAt(new DateTime('now'));
+
+            $manager->persist($rating);
+            $manager->flush();
         }
     }
 }
