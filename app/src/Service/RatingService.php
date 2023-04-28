@@ -14,9 +14,15 @@ class RatingService
      */
     private RatingsRepository $ratingsRepository;
 
-    public function __construct(RatingsRepository $ratingsRepository)
+    /**
+     * @var FeedbackService
+     */
+    private FeedbackService $feedbackService;
+
+    public function __construct(RatingsRepository $ratingsRepository, FeedbackService $feedbackService)
     {
         $this->ratingsRepository = $ratingsRepository;
+        $this->feedbackService = $feedbackService;
     }
 
     /**
@@ -33,7 +39,7 @@ class RatingService
      */
     public function createRating(Ratings $ratings): Ratings
     {
-       return $this->ratingsRepository->save($ratings, true);
+        return $this->ratingsRepository->save($ratings, true);
     }
 
     /**

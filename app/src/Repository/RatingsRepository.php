@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Feedback;
 use App\Entity\Ratings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -38,6 +39,36 @@ class RatingsRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * @param Feedback $feedback
+     * @return int|mixed|string|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getTotalRatingScoreCount(Feedback $feedback)
+    {
+        return $this->createQueryBuilder('r')
+            ->select('SUM(r.score) as totalScoreCount')
+            ->where('r.feedback =:feedback')
+            ->setParameter('feedback', $feedback)
+            ->getQuery()->getOneOrNullResult();
+
+    }
+
+    /**
+     * @param Feedback $feedback
+     * @return int|mixed|string|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getRatingCount(Feedback $feedback)
+    {
+        return $this->createQueryBuilder('r')
+            ->select('COUNT(r) as totalCount')
+            ->where('r.feedback =:feedback')
+            ->setParameter('feedback', $feedback)
+            ->getQuery()->getOneOrNullResult();
+
     }
 
 }

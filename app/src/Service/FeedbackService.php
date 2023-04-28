@@ -16,9 +16,15 @@ class FeedbackService
      */
     private FeedbackRepository $feedbackRepository;
 
-    public function __construct(FeedbackRepository $feedbackRepository)
+    /**
+     * @var RatingsRepository
+     */
+    private RatingsRepository $ratingsRepository;
+
+    public function __construct(FeedbackRepository $feedbackRepository, RatingsRepository $ratingsRepository)
     {
         $this->feedbackRepository = $feedbackRepository;
+        $this->ratingsRepository = $ratingsRepository;
     }
 
     /**
@@ -35,7 +41,7 @@ class FeedbackService
      */
     public function createFeedback(Feedback $feedback): Feedback
     {
-       return $this->feedbackRepository->save($feedback, true);
+        return $this->feedbackRepository->save($feedback, true);
     }
 
     /**
@@ -54,13 +60,7 @@ class FeedbackService
     public function removeFeedback(int $id): void
     {
         $rating = $this->feedbackRepository->findOneBy(['id' => $id]);
-        $this->feedbackRepository->remove($rating,true);
-    }
-
-    public function updateOverallRating(float $overallRating, Feedback $feedback){
-
-        $feedback->setOverallRating($overallRating);
-        $this->feedbackRepository->save($feedback,true);
+        $this->feedbackRepository->remove($rating, true);
     }
 
 }
