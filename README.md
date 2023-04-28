@@ -43,12 +43,7 @@ php bin/phpunit
 ```
 Output should be same!
 
-
-##Example Request
-
-```
-curl --location 'http://127.0.0.1:8080/rating' | jq
-```
+You can find postman collection inside app folder.
 
 
 
