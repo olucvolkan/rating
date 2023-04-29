@@ -42,6 +42,8 @@ php bin/console --env=test doctrine:fixtures:load
 php bin/phpunit
 ```
 Output should be same!
+[![image](https://www.linkpicture.com/q/Screenshot-2023-04-29-at-22.42.14.png)](https://www.linkpicture.com/view.php?img=LPic644d73aa4eb311958195950)
+
 
 You can find postman collection inside app folder.
 
